@@ -1,17 +1,22 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 void testTshirtSize();
 void testPrintColorMap();
+void testNumber();
 void testWeatherReport();
 
-TEST(TShirt, Size) {
+TEST(TShirt, Size)
+{
     testTshirtSize();
 }
 
-TEST(ColorMap, Print) {
+TEST(ColorMap, Print)
+{
+    testNumber();
     testPrintColorMap();
 }
 
-TEST(WeatherReport, Report) {
+TEST(WeatherReport, Report)
+{
     testWeatherReport();
 }
