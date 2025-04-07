@@ -25,6 +25,7 @@ add_executable(
         src/ColorCodesTest.cpp
         src/TShirtsTest.cpp
         src/WeatherReportTest.cpp
+        src/SensorStub.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE src ../../src)

@@ -1,5 +1,6 @@
 // Copyright(c), Philips Medical Systems Nederland B.V., IGT-Devices
 
+#include "SensorStub.h"
 #include <Weather/WeatherReport.h>
 
 #include <gtest/gtest.h>
@@ -9,80 +10,27 @@
 
 namespace Weather::Test {
 
-namespace {
-// it could be gmock object
-class SensorStub : public IWeatherSensor
-{
-  public:
-    SensorStub(const std::uint8_t humidity,
-               const std::uint8_t precipitation,
-               const double       temperature,
-               const std::uint8_t windSpeed)
-        : humidity_{humidity}
-        , precipitation_{precipitation}
-        , temperature_{temperature}
-        , windSpeed_{windSpeed}
-    {
-    }
-
-    std::uint8_t humidity() const override
-    {
-        return humidity_;
-    }
-
-    std::uint8_t precipitation() const override
-    {
-        return precipitation_;
-    }
-
-    double temperatureInC() const override
-    {
-        return temperature_;
-    }
-
-    std::uint8_t windSpeedKMPH() const override
-    {
-        return windSpeed_;
-    }
-
-  private:
-    std::uint8_t humidity_;
-    std::uint8_t precipitation_;
-    double       temperature_;
-    std::uint8_t windSpeed_;
-};
-} // namespace
-
 TEST(SunnyDay, GivenLowPrecipitationReportReportShouldReturnSunnyDay)
 {
-    rc::check("Low precipitation is sunny",
-              [](const std::uint8_t humidity,
-                 const std::uint8_t precipitation,
-                 const double       temperature,
-                 const std::uint8_t windSpeed) {
-                  const auto sensor = SensorStub(humidity, precipitation, temperature, windSpeed);
-                  const auto result = report(sensor);
-                  if (precipitation < 20)
-                  {
-                      RC_ASSERT(result == WeatherReport::Sunny);
-                  }
-                  else
-                  {
-                      RC_ASSERT_FALSE(result == WeatherReport::Sunny);
-                  }
-              });
+    rc::check("Low precipitation is sunny", [](const std::shared_ptr<IWeatherSensor>& sensor) {
+        const auto result = report(*sensor);
+        if (sensor->precipitation() < 20)
+        {
+            RC_ASSERT(result == WeatherReport::Sunny);
+        }
+        else
+        {
+            RC_ASSERT_FALSE(result == WeatherReport::Sunny);
+        }
+    });
 }
 
 TEST(StormyDay, GivenHighPrecipitationWithStrongWindReportShouldReturnStormyDay)
 {
     rc::check("High precipitation and strong wind is stormy",
-              [](const std::uint8_t humidity,
-                 const std::uint8_t precipitation,
-                 const double       temperature,
-                 const std::uint8_t windSpeed) {
-                  const auto sensor = SensorStub(humidity, precipitation, temperature, windSpeed);
-                  const auto result = report(sensor);
-                  if (precipitation >= 20 && windSpeed > 50)
+              [](const std::shared_ptr<IWeatherSensor>& sensor) {
+                  const auto result = report(*sensor);
+                  if (sensor->precipitation() >= 20 && sensor->windSpeedKMPH() > 50)
                   {
                       RC_ASSERT(result == WeatherReport::Stormy);
                   }
@@ -96,13 +44,9 @@ TEST(StormyDay, GivenHighPrecipitationWithStrongWindReportShouldReturnStormyDay)
 TEST(RainyDay, GivenHighPrecipitationWithoutStrongWindReportShouldReturnRainyDay)
 {
     rc::check("High precipitation without strong wind is rainy",
-              [](const std::uint8_t humidity,
-                 const std::uint8_t precipitation,
-                 const double       temperature,
-                 const std::uint8_t windSpeed) {
-                  const auto sensor = SensorStub(humidity, precipitation, temperature, windSpeed);
-                  const auto result = report(sensor);
-                  if (precipitation >= 20 && windSpeed <= 50)
+              [](const std::shared_ptr<IWeatherSensor>& sensor) {
+                  const auto result = report(*sensor);
+                  if (sensor->precipitation() >= 20 && sensor->windSpeedKMPH() <= 50)
                   {
                       RC_ASSERT(result == WeatherReport::Rainy);
                   }
