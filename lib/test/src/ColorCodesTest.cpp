@@ -1,6 +1,6 @@
 // Copyright(c), Philips Medical Systems Nederland B.V., IGT-Devices
 
-#include <ColorCodes.h>
+#include <ColorMap/Print.h>
 
 #include <gtest/gtest.h>
 
@@ -12,21 +12,9 @@
 #include <unordered_map>
 #include <utility>
 
-TEST(Number, NumberShouldReturnCorrectValue)
-{
-    for (auto i = 0; i < 5; ++i)
-    {
-        for (auto j = 0; j < 5; ++j)
-        {
-            const auto expectedNumber = i * 5 + j + 1;
-            EXPECT_EQ(ColorCodes::number(i, j), expectedNumber);
-        }
-    }
-}
-
 TEST(ColorMap, printColorMapShouldBeAligned)
 {
-    const auto colorMap = ColorCodes::printColorMap();
+    const auto colorMap = ColorMap::printColorMap();
     std::cout << colorMap;
 
     // In each line of the color map there are 3 tokens separated by '|'
